@@ -1,2 +1,2 @@
-# laravel-acl
-A custom ACL (Access Control List) package to Laravel Framework
+# laravel-audit
+A custom audit package for Laravel Framework
