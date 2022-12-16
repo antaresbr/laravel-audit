@@ -25,6 +25,7 @@ class TestCase extends BaseTestCase
         parent::setUp();
 
         $this->loadLaravelMigrations();
+        $this->loadMigrationsFrom(ai_audit_path('database/migrations'));
 
         $this->artisan('migrate', [
             '--database' => config('database.default'),

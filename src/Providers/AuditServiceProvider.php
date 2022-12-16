@@ -26,8 +26,6 @@ class AuditServiceProvider extends ServiceProvider
     {
         $this->loadTranslationsFrom(ai_audit_path('lang'), 'audit');
 
-        $this->loadMigrationsFrom(ai_audit_path('database/migrations'));
-
         $this->loadRoutes();
     }
 
