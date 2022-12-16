@@ -3,6 +3,7 @@ namespace Antares\Audit;
 
 use Antares\Audit\Enums\ActionsAction;
 use Antares\Audit\Enums\DataAction;
+use Antares\Audit\Models\AuditAction;
 use Antares\Audit\Models\AuditData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -43,7 +44,7 @@ class Audit
             return null;
         }
 
-        return AuditData::create([
+        return AuditAction::create([
             'user_id' => Auth::check() ? Auth::user()->id : null,
             'target' => $target,
             'action' => $action->value,

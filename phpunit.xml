@@ -13,7 +13,8 @@
       <file>./tests/Database/RefreshDatabaseTest.php</file>
     </testsuite>
     <testsuite name="Feature">
-      <file>./tests/Feature/DatabaseDataTest.php</file>
+      <file>./tests/Feature/AuditActionsTest.php</file>
+      <file>./tests/Feature/AuditDataTest.php</file>
       <file>./tests/Feature/AliveTest.php</file>
     </testsuite>
   </testsuites>

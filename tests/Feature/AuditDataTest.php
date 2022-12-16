@@ -2,61 +2,15 @@
 namespace Antares\Audit\Tests\Feature;
 
 use Antares\Audit\Enums\DataAction;
-use Antares\Audit\Models\AuditAction;
 use Antares\Audit\Models\AuditData;
 use Antares\Audit\Tests\Models\Car;
 use Antares\Audit\Tests\Models\User;
 use Antares\Audit\Tests\TestCase;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
+use Antares\Audit\Tests\Traits\AdminUserTrait;
 
-class DatabaseDataTest extends TestCase
+class AuditDataTest extends TestCase
 {
-    /** @test */
-    public function create_admin_user()
-    {
-        $user = User::create([
-            'id' => 1,
-            'name' => 'Admin User',
-            'email' => 'admin@admin.org',
-            'email_verified_at' => Carbon::now(),
-            'password' => Hash::make('admin'),
-        ]);
-        $this->assertInstanceOf(User::class, $user);
-    }
-
-    /** @test */
-    public function check_admin_user()
-    {
-        $this->assertCount(1, User::all());
-        $user = User::find(1);
-        $this->assertInstanceOf(User::class, $user);
-        $this->assertEquals($user->name, 'Admin User');
-        $this->assertEquals($user->email, 'admin@admin.org');
-    }
-
-    /** @test */
-    public function cars_with_no_log()
-    {
-        $car = new Car();
-        $car->auditLog = false;
-        $car->name = 'Beetle';
-        $car->brand = 'VW';
-        $car->save();
-        $this->assertCount(1, Car::all());
-        $this->assertCount(0, AuditData::all());
-        $this->assertCount(0, AuditAction::all());
-
-        $car->name = 'New Beetle';
-        $car->save();
-        $this->assertCount(0, AuditData::all());
-        $this->assertCount(0, AuditAction::all());
-
-        $car->delete();
-        $this->assertCount(0, Car::all());
-        $this->assertCount(0, AuditData::all());
-        $this->assertCount(0, AuditAction::all());
-    }
+    use AdminUserTrait;
 
     private function getLastDataLog($car)
     {
@@ -66,7 +20,34 @@ class DatabaseDataTest extends TestCase
         ])->orderBy('id')->get()->last();
     }
 
-    /** @test */
+    /**
+     * @test
+     * @depends create_admin_user
+     * @depends check_admin_user
+     **/
+    public function cars_with_no_log()
+    {
+        $car = new Car();
+        $car->auditLog = false;
+        $car->name = 'Beetle';
+        $car->brand = 'VW';
+        $car->save();
+        $this->assertCount(1, Car::all());
+        $this->assertCount(0, AuditData::all());
+
+        $car->name = 'New Beetle';
+        $car->save();
+        $this->assertCount(0, AuditData::all());
+
+        $car->delete();
+        $this->assertCount(0, Car::all());
+        $this->assertCount(0, AuditData::all());
+    }
+
+    /**
+     * @test
+     * @depends cars_with_no_log
+     **/
     public function cars_with_log()
     {
         $user = User::find(1);
@@ -78,7 +59,6 @@ class DatabaseDataTest extends TestCase
         $car->save();
         $this->assertCount(1, Car::all());
         $this->assertCount(1, AuditData::all());
-        $this->assertCount(0, AuditAction::all());
 
         $log = $this->getLastDataLog($car);
         $this->assertInstanceOf(AuditData::class, $log);
@@ -94,7 +74,6 @@ class DatabaseDataTest extends TestCase
         $car->name = 'New Beetle';
         $car->update();
         $this->assertCount(2, AuditData::all());
-        $this->assertCount(0, AuditAction::all());
 
         $log = $this->getLastDataLog($car);
         $this->assertInstanceOf(AuditData::class, $log);
@@ -110,7 +89,6 @@ class DatabaseDataTest extends TestCase
         $this->assertCount(0, Car::all());
         $this->assertCount(3, AuditData::all());
         $this->assertCount(3, AuditData::where('user_id', $user->id)->get());
-        $this->assertCount(0, AuditAction::all());
 
         $log = $this->getLastDataLog($car);
         $this->assertInstanceOf(AuditData::class, $log);

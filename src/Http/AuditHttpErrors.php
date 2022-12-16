@@ -9,8 +9,8 @@ class AuditHttpErrors extends AbstractHttpErrors
 
     public const PARAMETER_NOT_SUPPLIED = 994011;
 
-    public const FAIL_TO_LOG_AUDIT_DATA = 994011;
-    public const FAIL_TO_LOG_AUDIT_ACTIONS = 994012;
+    public const FAIL_TO_LOG_AUDIT_DATA = 994021;
+    public const FAIL_TO_LOG_AUDIT_ACTIONS = 994022;
 
     public const MESSAGES = [
         self::UNAUTHENTICATED => 'audit::errors.unauthenticated',
