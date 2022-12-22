@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class Audit
 {
+    public static function getUser()
+    {
+        return Auth::check() ? Auth::user()->id : config('audit.default.user');
+    }
+
     public static function logData(Model $model, DataAction $action)
     {
         $old = null;
@@ -27,7 +32,7 @@ class Audit
             }
         }
         return AuditData::create([
-            'user_id' => Auth::check() ? Auth::user()->id : null,
+            'user_id' => static::getUser(),
             'target' => $model->getTable(),
             'target_pk' => $model->getKey(),
             'action' => $action->value,
@@ -45,7 +50,7 @@ class Audit
         }
 
         return AuditAction::create([
-            'user_id' => Auth::check() ? Auth::user()->id : null,
+            'user_id' => static::getUser(),
             'target' => $target,
             'action' => $action->value,
             'data' => $data,

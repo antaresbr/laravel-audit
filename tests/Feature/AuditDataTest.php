@@ -7,6 +7,7 @@ use Antares\Audit\Tests\Models\Car;
 use Antares\Audit\Tests\Models\User;
 use Antares\Audit\Tests\TestCase;
 use Antares\Audit\Tests\Traits\AdminUserTrait;
+use Illuminate\Support\Facades\Config;
 
 class AuditDataTest extends TestCase
 {
@@ -99,5 +100,46 @@ class AuditDataTest extends TestCase
         $this->assertIsArray($log->data['old']);
         $this->assertEquals($log->data['old']['name'], $car->name);
         $this->assertEquals($log->data['old']['brand'], $car->brand);
+    }
+
+    /**
+     * @test
+     * @depends cars_with_log
+     **/
+    public function cars_with_log_default_user()
+    {
+        $user_id = 99;
+        Config::set('audit.default.user', $user_id);
+
+        $car = new Car();
+        $car->name = 'Fusion';
+        $car->brand = 'Ford';
+        $car->save();
+        $this->assertCount(1, AuditData::where('user_id', $user_id)->get());
+
+        $log = $this->getLastDataLog($car);
+        $this->assertInstanceOf(AuditData::class, $log);
+        $this->assertEquals($user_id, $log->user_id);
+        $this->assertEquals(DataAction::CREATE->value, $log->action);
+        $this->assertJson($log->getRawOriginal('data'));
+        $this->assertIsArray($log->data['new']);
+        $this->assertEquals($log->data['new']['name'], $car->name);
+        $this->assertEquals($log->data['new']['brand'], $car->brand);
+        $this->assertNull($log->data['old']);
+
+        $car->wasRecentlyCreated = false;
+        $car->name = 'Edge';
+        $car->update();
+        $this->assertCount(2, AuditData::where('user_id', $user_id)->get());
+
+        $log = $this->getLastDataLog($car);
+        $this->assertInstanceOf(AuditData::class, $log);
+        $this->assertEquals($user_id, $log->user_id);
+        $this->assertEquals(DataAction::UPDATE->value, $log->action);
+        $this->assertJson($log->getRawOriginal('data'));
+        $this->assertIsArray($log->data['new']);
+        $this->assertEquals($log->data['new']['name'], $car->name);
+        $this->assertIsArray($log->data['old']);
+        $this->assertEquals($log->data['old']['name'], 'Fusion');
     }
 }
