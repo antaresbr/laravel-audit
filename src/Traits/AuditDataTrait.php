@@ -23,6 +23,7 @@ trait AuditDataTrait
     {
         static::saved(function (Model $model) {
             if (
+                (config('audit.enabled', true) !== true) or
                 (property_exists($model, 'auditLog') and $model->auditLog === false) or
                 (!$model->wasRecentlyCreated and !$model->getChanges())
             ) {
@@ -32,7 +33,10 @@ trait AuditDataTrait
         });
 
         static::deleted(function (Model $model) {
-            if (property_exists($model, 'auditLog') and $model->auditLog === false) {
+            if (
+                (config('audit.enabled', true) !== true) or
+                (property_exists($model, 'auditLog') and $model->auditLog === false)
+            ) {
                 return;
             }
             Audit::logData($model, DataAction::DELETE);

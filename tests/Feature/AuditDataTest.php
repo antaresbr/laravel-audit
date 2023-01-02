@@ -26,6 +26,26 @@ class AuditDataTest extends TestCase
      * @depends create_admin_user
      * @depends check_admin_user
      **/
+    public function audit_disabled()
+    {
+        Config::set('audit.enabled', false);
+
+        $car = new Car();
+        $car->name = 'Cruze';
+        $car->brand = 'GM';
+        $car->save();
+        $this->assertCount(1, Car::all());
+        $this->assertCount(0, AuditData::all());
+
+        Car::destroy($car->id);
+        $this->assertCount(0, Car::all());
+        $this->assertCount(0, AuditData::all());
+    }
+
+    /**
+     * @test
+     * @depends audit_disabled
+     **/
     public function cars_with_no_log()
     {
         $car = new Car();

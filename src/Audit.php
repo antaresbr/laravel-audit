@@ -17,6 +17,9 @@ class Audit
 
     public static function logData(Model $model, DataAction $action)
     {
+        if (config('audit.enabled', true) !== true) {
+            return null;
+        }
         $old = null;
         $new = null;
         if ($action == DataAction::CREATE) {
@@ -45,6 +48,9 @@ class Audit
 
     public static function logAction($target, ActionsAction $action, $data = [])
     {
+        if (config('audit.enabled', true) !== true) {
+            return null;
+        }
         if ($action == ActionsAction::ACCESS and config('audit.actions.log_access', true) !== true) {
             return null;
         }
