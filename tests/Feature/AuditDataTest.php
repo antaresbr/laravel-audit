@@ -106,6 +106,12 @@ class AuditDataTest extends TestCase
         $this->assertIsArray($log->data['old']);
         $this->assertEquals($log->data['old']['name'], 'Beetle');
 
+        $car->auditIgnore = ['name'];
+        $car->name = 'New Beetle - Ignore';
+        $car->update();
+        $this->assertCount(2, AuditData::all());
+
+        $car->auditIgnore = [];
         $car->delete();
         $this->assertCount(0, Car::all());
         $this->assertCount(3, AuditData::all());

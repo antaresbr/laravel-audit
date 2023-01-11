@@ -5,6 +5,7 @@ use Antares\Audit\Enums\ActionsAction;
 use Antares\Audit\Enums\DataAction;
 use Antares\Audit\Models\AuditAction;
 use Antares\Audit\Models\AuditData;
+use Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,16 +35,30 @@ class Audit
                 $old[$key] = $model->getOriginal($key);
             }
         }
-        return AuditData::create([
-            'user_id' => static::getUser(),
-            'target' => $model->getTable(),
-            'target_pk' => $model->getKey(),
-            'action' => $action->value,
-            'data' => [
-                'old' => $old,
-                'new' => $new,
-            ],
-        ]);
+        if (property_exists($model, 'auditIgnore') and !empty($model->auditIgnore)) {
+            foreach($model->auditIgnore as $key) {
+                if (is_array($new) and array_key_exists($key, $new)) {
+                    unset($new[$key]);
+                }
+                if (is_array($old) and array_key_exists($key, $old)) {
+                    unset($old[$key]);
+                }
+            }
+
+        }
+        if (!empty($old) or !empty($new)) {
+            return AuditData::create([
+                'user_id' => static::getUser(),
+                'target' => $model->getTable(),
+                'target_pk' => $model->getKey(),
+                'action' => $action->value,
+                'data' => [
+                    'old' => $old,
+                    'new' => $new,
+                ],
+            ]);
+        }
+        return null;
     }
 
     public static function logAction($target, ActionsAction $action, $data = [])

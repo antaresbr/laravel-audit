@@ -15,6 +15,13 @@ trait AuditDataTrait
     public $auditLog = true;
 
     /**
+     * Attributes to ignore
+     *
+     * @var bool
+     */
+    public $auditIgnore = [];
+
+    /**
      * Boot this trait
      *
      * @return void
