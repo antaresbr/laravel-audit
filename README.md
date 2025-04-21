@@ -1,2 +1,2 @@
 # laravel-audit
-A custom audit package for Laravel 11 Framework
+A custom audit package for Laravel 12 Framework
