@@ -18,9 +18,8 @@
     "require": {
         "php": "^8",
         "antaresbr/foundation": "*",
-        "antaresbr/laravel-http": "^8",
-        "doctrine/dbal": "^2.10",
-        "laravel/framework": "^8"
+        "antaresbr/laravel-http": "^9",
+        "laravel/framework": "^9"
     },
     "autoload": {
         "files": [
@@ -31,7 +30,7 @@
         }
     },
     "require-dev": {
-        "orchestra/testbench": "^6"
+        "orchestra/testbench": "^7"
     },
     "autoload-dev": {
         "psr-4": {
