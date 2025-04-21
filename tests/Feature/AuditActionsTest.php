@@ -4,10 +4,11 @@ namespace Antares\Audit\Tests\Feature;
 use Antares\Audit\Enums\ActionsAction;
 use Antares\Audit\Http\AuditHttpErrors;
 use Antares\Audit\Models\AuditAction;
-use Antares\Audit\Tests\Models\User;
 use Antares\Audit\Tests\TestCase;
 use Antares\Audit\Tests\Traits\AdminUserTrait;
 use Antares\Http\JsonResponse;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Test;
 
 class AuditActionsTest extends TestCase
 {
@@ -20,11 +21,9 @@ class AuditActionsTest extends TestCase
         ])->orderBy('id')->get()->last();
     }
 
-    /**
-     * @test
-     * @depends create_admin_user
-     * @depends check_admin_user
-     **/
+    #[Test]
+    #[Depends('create_admin_user')]
+    #[Depends('check_admin_user')]
     public function log_access_is_enabled()
     {
         $response = $this->actingAs($this->getAdminUser())->get(config('audit.route.prefix.api') . '/log-access-is-enabled');
@@ -40,10 +39,8 @@ class AuditActionsTest extends TestCase
         $this->assertTrue($json['data']['logAccessIsEnabled']);
     }
 
-    /**
-     * @test
-     * @depends log_access_is_enabled
-     **/
+    #[Test]
+    #[Depends('log_access_is_enabled')]
     public function log_action_access_error()
     {
         $this->actingAs($this->getAdminUser());
@@ -59,10 +56,8 @@ class AuditActionsTest extends TestCase
         $this->assertTrue(in_array('target', $json['data']));
     }
 
-    /**
-     * @test
-     * @depends log_action_access_error
-     **/
+    #[Test]
+    #[Depends('log_action_access_error')]
     public function log_action_access_successful()
     {
         $user = $this->getAdminUser();

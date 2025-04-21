@@ -3,10 +3,11 @@
 namespace Antares\Audit\Tests\Feature;
 
 use Antares\Audit\Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class AliveTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function get_alive()
     {
         $response = $this->get(config('audit.route.prefix.api') . '/alive');

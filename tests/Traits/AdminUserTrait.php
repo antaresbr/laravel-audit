@@ -4,6 +4,7 @@ namespace Antares\Audit\Tests\Traits;
 use Antares\Audit\Tests\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use PHPUnit\Framework\Attributes\Test;
 
 trait AdminUserTrait
 {
@@ -22,7 +23,7 @@ trait AdminUserTrait
         return static::$adminUser;
     }
 
-    /** @test */
+    #[Test]
     public function create_admin_user()
     {
         $user = $this->getAdminUser();
@@ -38,7 +39,7 @@ trait AdminUserTrait
         $this->assertInstanceOf(User::class, $user);
     }
 
-    /** @test */
+    #[Test]
     public function check_admin_user()
     {
         $this->assertCount(1, User::all());

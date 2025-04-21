@@ -8,6 +8,8 @@ use Antares\Audit\Tests\Models\User;
 use Antares\Audit\Tests\TestCase;
 use Antares\Audit\Tests\Traits\AdminUserTrait;
 use Illuminate\Support\Facades\Config;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Test;
 
 class AuditDataTest extends TestCase
 {
@@ -21,11 +23,9 @@ class AuditDataTest extends TestCase
         ])->orderBy('id')->get()->last();
     }
 
-    /**
-     * @test
-     * @depends create_admin_user
-     * @depends check_admin_user
-     **/
+    #[Test]
+    #[Depends('create_admin_user')]
+    #[Depends('check_admin_user')]
     public function audit_disabled()
     {
         Config::set('audit.enabled', false);
@@ -42,10 +42,8 @@ class AuditDataTest extends TestCase
         $this->assertCount(0, AuditData::all());
     }
 
-    /**
-     * @test
-     * @depends audit_disabled
-     **/
+    #[Test]
+    #[Depends('audit_disabled')]
     public function cars_with_no_log()
     {
         $car = new Car();
@@ -65,10 +63,8 @@ class AuditDataTest extends TestCase
         $this->assertCount(0, AuditData::all());
     }
 
-    /**
-     * @test
-     * @depends cars_with_no_log
-     **/
+    #[Test]
+    #[Depends('cars_with_no_log')]
     public function cars_with_log()
     {
         $user = User::find(1);
@@ -128,10 +124,8 @@ class AuditDataTest extends TestCase
         $this->assertEquals($log->data['old']['brand'], $car->brand);
     }
 
-    /**
-     * @test
-     * @depends cars_with_log
-     **/
+    #[Test]
+    #[Depends('cars_with_log')]
     public function cars_with_log_default_user()
     {
         $user_id = 99;
