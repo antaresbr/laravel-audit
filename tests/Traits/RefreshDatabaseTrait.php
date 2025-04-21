@@ -8,6 +8,8 @@ use Antares\Audit\Tests\Models\Car;
 use Antares\Audit\Tests\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\RefreshDatabaseState;
+use PHPUnit\Framework\Attributes\Depends;
+use PHPUnit\Framework\Attributes\Test;
 
 trait RefreshDatabaseTrait
 {
@@ -21,7 +23,7 @@ trait RefreshDatabaseTrait
         $this->assertCount(0, Car::all());
     }
 
-    /** @test */
+    #[Test]
     public function flag_migrated_to_false()
     {
         RefreshDatabaseState::$migrated = false;
@@ -32,6 +34,8 @@ trait RefreshDatabaseTrait
      * @test
      * @depends flag_migrated_to_false
      */
+    #[Test]
+    #[Depends('flag_migrated_to_false')]
     public function refreshed_database()
     {
         $this->assert_refreshed_database();
